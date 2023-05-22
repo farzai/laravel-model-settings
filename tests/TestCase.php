@@ -1,10 +1,9 @@
 <?php
 
-namespace VendorName\Skeleton\Tests;
+namespace Farzai\ModelSettings\Tests;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
+use Farzai\ModelSettings\ModelSettingServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
-use VendorName\Skeleton\SkeletonServiceProvider;
 
 class TestCase extends Orchestra
 {
@@ -12,15 +11,13 @@ class TestCase extends Orchestra
     {
         parent::setUp();
 
-        Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'VendorName\\Skeleton\\Database\\Factories\\'.class_basename($modelName).'Factory'
-        );
+        //
     }
 
     protected function getPackageProviders($app)
     {
         return [
-            SkeletonServiceProvider::class,
+            ModelSettingServiceProvider::class,
         ];
     }
 
@@ -28,9 +25,17 @@ class TestCase extends Orchestra
     {
         config()->set('database.default', 'testing');
 
-        /*
-        $migration = include __DIR__.'/../database/migrations/create_skeleton_table.php.stub';
+        $this->migrateFromFile(__DIR__.'/../database/migrations/create_model-settings_table.php.stub');
+        $this->migrateFromFile(__DIR__.'/migrations/create_posts_table.php.stub');
+    }
+
+    protected function migrateFromFile(string $path): void
+    {
+        if (! file_exists($path)) {
+            throw new \InvalidArgumentException("File does not exist at path {$path}");
+        }
+
+        $migration = include $path;
         $migration->up();
-        */
     }
 }
